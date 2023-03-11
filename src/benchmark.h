@@ -6,6 +6,7 @@
 #include <cstddef>
 #include <iostream>
 #include <thread>
+#include <vector>
 
 #include "src/hash_set_base.h"
 
