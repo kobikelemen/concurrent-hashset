@@ -1,0 +1,14 @@
+{
+    "files.associations": {
+        "__debug": "cpp",
+        "__nullptr": "cpp",
+        "array": "cpp",
+        "functional": "cpp",
+        "iterator": "cpp",
+        "initializer_list": "cpp",
+        "memory": "cpp",
+        "type_traits": "cpp",
+        "algorithm": "cpp",
+        "utility": "cpp"
+    }
+}
