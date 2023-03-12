@@ -1,9 +1,10 @@
 #include <iostream>
 
 #include "src/hash_set_sequential.h"
+#include "src/hash_set_coarse_grained.h"
 
 int main(int /*argc*/, char** /*argv*/) {
-    HashSetSequential<int> hash_set = HashSetSequential<int>(10);
+    HashSetCoarseGrained<int> hash_set = HashSetCoarseGrained<int>(10);
     hash_set.Add(5);
     hash_set.Add(1);
     hash_set.Add(4);

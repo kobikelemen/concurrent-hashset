@@ -25,7 +25,7 @@ class HashSetRefinable : public HashSetBase<T> {
     return false;
   }
 
-  [[nodiscard]] size_t Size() const final {
+  [[nodiscard]] size_t Size() final {
     assert(false && "Not implemented yet");
     return 0u;
   }

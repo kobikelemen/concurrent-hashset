@@ -19,6 +19,8 @@ class HashSetSequential : public HashSetBase<T> {
   }
 
   bool Add(T elem) final {
+    if (Contains(elem))
+      return false;
     table_[std::hash<T>()(elem) % len_].push_back(elem);
     size_ ++;
     if (Policy()) 
@@ -30,9 +32,7 @@ class HashSetSequential : public HashSetBase<T> {
     auto *bucket = &table_[std::hash<T>()(elem) % len_];
     for (size_t i = 0; i < bucket->size(); i++) {
       if ((*bucket)[i] == elem) {
-        std::cout << "removed: " << *(bucket->begin() + static_cast<long>(i)) << std::endl;
         bucket->erase(bucket->begin() + static_cast<long>(i));
-
         size_ --;
         return true;
       }
@@ -49,7 +49,7 @@ class HashSetSequential : public HashSetBase<T> {
     return false;
   }
 
-  [[nodiscard]] size_t Size() const final {
+  [[nodiscard]] size_t Size() final {
     return size_;
   }
 

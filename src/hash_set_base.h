@@ -20,7 +20,7 @@ class HashSetBase {
   [[nodiscard]] virtual bool Contains(T elem) = 0;
 
   // Returns the size of the hash set.
-  [[nodiscard]] virtual size_t Size() const = 0;
+  [[nodiscard]] virtual size_t Size() = 0;
 };
 
 #endif  // HASH_SET_BASE_H

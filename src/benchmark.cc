@@ -8,6 +8,7 @@ void ThreadBody(HashSetBase<int>& hash_set, size_t chunk_size, size_t id,
   for (size_t k = 0; k < chunk_size * 2; k++) {
     int elem = static_cast<int>(id * chunk_size + k);
     hash_set.Add(elem);
+
     max_observed_size = std::max(max_observed_size, hash_set.Size());
   }
   for (size_t j = 0; j < 20; j++) {

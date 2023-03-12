@@ -39,6 +39,7 @@ int RunBenchmark(int argc, char** argv) {
 
   auto begin_time = std::chrono::high_resolution_clock::now();
   for (size_t i = 0; i < num_threads; i++) {
+    // std::cout << "thread id: " << i << std::endl;
     threads.emplace_back(std::thread(ThreadBody, std::ref(hash_set), chunk_size,
                                      i, std::ref(max_observed_sizes.at(i))));
   }
