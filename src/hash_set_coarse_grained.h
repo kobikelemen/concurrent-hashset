@@ -22,7 +22,7 @@ class HashSetCoarseGrained : public HashSetBase<T> {
 
   bool Add(T elem) final {
     if (Contains(elem))
-      return false;
+      return true;
     std::scoped_lock<std::mutex> lock(mutex_);
     table_[std::hash<T>()(elem) % len_].push_back(elem);
     size_ ++;
