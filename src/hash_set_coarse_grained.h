@@ -21,10 +21,9 @@ class HashSetCoarseGrained : public HashSetBase<T> {
   }
 
   bool Add(T elem) final {
-    
-    if (Contains(elem))
-      return true;
     std::scoped_lock<std::mutex> lock(mutex_);
+    if (ContainsPriv(elem))
+      return true;
     table_[std::hash<T>()(elem) % len_.load()].push_back(elem);
     size_.fetch_add(1);// ++;
     if (Policy()) 
@@ -46,7 +45,7 @@ class HashSetCoarseGrained : public HashSetBase<T> {
   }
 
   [[nodiscard]] bool Contains(T elem) final {
-    // std::scoped_lock<std::mutex> lock(mutex_);
+    std::scoped_lock<std::mutex> lock(mutex_);
     auto bucket = table_[std::hash<T>()(elem) % len_.load()];
     for (T e : bucket) {
       if (e == elem) 
@@ -70,6 +69,7 @@ class HashSetCoarseGrained : public HashSetBase<T> {
 
 private:
   std::mutex mutex_;
+  // std::mutex mutex_contains;
   std::vector<std::vector<T>> table_;
   std::atomic<size_t> size_; /* Number of elements. */
   std::atomic<size_t> len_; /* Number of buckets (length of table_). */
@@ -91,6 +91,15 @@ private:
         table_[std::hash<T>()(elem) % len_.load()].push_back(elem);
       }
     }
+  }
+
+  [[nodiscard]] bool ContainsPriv(T elem) {
+    auto bucket = table_[std::hash<T>()(elem) % len_.load()];
+    for (T e : bucket) {
+      if (e == elem) 
+        return true;
+    }
+    return false;
   }
 };
 
