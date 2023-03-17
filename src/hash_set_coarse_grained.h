@@ -16,8 +16,8 @@ class HashSetCoarseGrained : public HashSetBase<T> {
     std::scoped_lock<std::mutex> lock(mutex_);
     for (size_t i = 0; i < initial_capacity; i++) 
         table_.push_back(std::vector<T>());
-    size_.store(0);// = 0;
-    len_.store(initial_capacity);// = initial_capacity;
+    size_.store(0);
+    len_.store(initial_capacity);
   }
 
   bool Add(T elem) final {
@@ -25,7 +25,7 @@ class HashSetCoarseGrained : public HashSetBase<T> {
     if (ContainsPriv(elem))
       return true;
     table_[std::hash<T>()(elem) % len_.load()].push_back(elem);
-    size_.fetch_add(1);// ++;
+    size_.fetch_add(1);
     if (Policy()) 
       Resize();
     return false;
@@ -37,7 +37,7 @@ class HashSetCoarseGrained : public HashSetBase<T> {
     for (size_t i = 0; i < table_[index].size(); i++) {
       if (table_[index][i] == elem) {
         table_[index].erase(table_[index].begin() + static_cast<long>(i));
-        size_.fetch_sub(1);// --;
+        size_.fetch_sub(1);
         return true;
       }
     }
@@ -69,7 +69,6 @@ class HashSetCoarseGrained : public HashSetBase<T> {
 
 private:
   std::mutex mutex_;
-  // std::mutex mutex_contains;
   std::vector<std::vector<T>> table_;
   std::atomic<size_t> size_; /* Number of elements. */
   std::atomic<size_t> len_; /* Number of buckets (length of table_). */

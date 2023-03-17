@@ -16,8 +16,6 @@ class HashSetStriped : public HashSetBase<T> {
   explicit HashSetStriped(size_t initial_capacity) {
     for (size_t i = 0; i < initial_capacity; i++) {
       table_.push_back(std::vector<T>());
-      // std::unique_ptr<std::mutex> mutex_ptr(new std::mutex());
-      // mutexes_.emplace_back(std::move(mutex_ptr));
       std::mutex *m = new std::mutex();
       mutexes_.emplace_back(m);
     }
@@ -27,10 +25,11 @@ class HashSetStriped : public HashSetBase<T> {
   }
 
   bool Add(T elem) final {
-    if (Contains(elem))
-      return true;
     size_t mutex_index = std::hash<T>()(elem) % num_locks_.load();
     std::unique_lock<std::mutex> lock(*mutexes_[mutex_index]);
+    if (ContainsPriv(elem))
+      return true;
+    
     size_t table_index = std::hash<T>()(elem) % len_.load(); 
     table_[table_index].push_back(elem);
     size_.fetch_add(1);
@@ -58,7 +57,6 @@ class HashSetStriped : public HashSetBase<T> {
 
   [[nodiscard]] bool Contains(T elem) final {
     size_t mutex_index = std::hash<T>()(elem) % num_locks_.load(); 
-    // std::cout << "mutex_index: " << mutex_index << " mutexes.size(): " << mutexes_.size() << std::endl;
     std::scoped_lock<std::mutex> lock(*mutexes_[mutex_index]);
     size_t table_index = std::hash<T>()(elem) % len_.load(); 
 
@@ -123,6 +121,18 @@ private:
     }
     for (std::unique_ptr<std::mutex> &mutex : mutexes_)
       mutex->unlock();
+  }
+
+  /* Assumes lock is already held since called fom inside
+     the class. */
+  [[nodiscard]] bool ContainsPriv(T elem) {
+    size_t table_index = std::hash<T>()(elem) % len_.load(); 
+    auto bucket = table_[table_index];
+    for (T e : bucket) {
+      if (e == elem) 
+        return true;
+    }
+    return false;
   }
 };
 
